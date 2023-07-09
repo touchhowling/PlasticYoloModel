@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Image Display</title>
+    <style>
+        body {
+            background-color: #1f1f1f;
+            color: #ffffff;
+            font-family: Arial, sans-serif;
+        }
+
+        .container {
+            display: flex;
+            justify-content: space-between;
+            padding: 20px;
+            width: 80%;
+            margin: 0 auto;
+        }
+
+        .image-block {
+            width: 48%;
+        }
+
+        img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 20px;
+        }
+
+        .center-heading {
+            text-align: center;
+        }
+
+        .footer {
+            position: fixed;
+            bottom: 10px;
+            right: 10px;
+            font-size: 12px;
+            opacity: 0.7;
+        }
+    </style>
+</head>
+<body>
+    <h1 class="center-heading">Analysis Results</h1>
+    <div class="container">
+        <div class="image-block">
+            <h2>Uploaded Image</h2>
+            <img src="{{ url_for('static', filename='uploads/' + image_name) }}" alt="Uploaded Image">
+        </div>
+        <div class="image-block">
+            <h2>Processed Image</h2>
+            <img src="{{ url_for('static', filename='results/' + image_name) }}" alt="Processed Image">
+        </div>
+    </div>
+    <div class="footer">
+        Developed by Dev, Shivam, Sania
+    </div>
+</body>
+</html>

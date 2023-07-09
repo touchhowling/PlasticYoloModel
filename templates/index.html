@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Image Upload</title>
+    <style>
+        body {
+            background-color: #1f1f1f;
+            color: #ffffff;
+            font-family: Arial, sans-serif;
+        }
+        
+        .container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+            width: 80%;
+            margin: 0 auto;
+        }
+        
+        .upload-block {
+            background-color: #333333;
+            padding: 20px;
+            text-align: center;
+        }
+        
+        .upload-block-text {
+            color: #ffffff;
+            font-size: 16px;
+        }
+        
+        .upload-button {
+            background-color: #f09f51;
+            color: #ffffff;
+            border: none;
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+        
+        .upload-button:hover {
+            background-color: #e0773e;
+        }
+        
+        h1 {
+            margin-top: 0;
+            text-align: center;
+        }
+        
+        .image-info {
+            margin-top: 20px;
+            font-size: 16px;
+            text-align: center;
+        }
+        
+        .preview-image {
+            max-width: 100%;
+            height: auto;
+            margin-top: 20px;
+            display: block;
+            width: 100%;
+            max-height: 300px;
+            object-fit: contain;
+        }
+    </style>
+</head>
+<body>
+    <h1>Predict Plastic</h1>
+    <div class="container">
+        <div class="upload-block">
+            <form action="/upload" method="POST" enctype="multipart/form-data">
+            <label for="upload-input" ></label>
+            <input type="file" name="image" id="upload-input" class="upload-button" accept="image/*" onchange="previewImage(event)"> 
+            <input type="submit" value="Upload" class="upload-button">
+            </form>
+        </div>
+        <div id="preview-container"></div>
+        <p class="image-info">This model predicts plastic in a given image.<br>Dataset provided by Reva University.</p>
+    </div>
+
+    <script>
+        function previewImage(event) {
+            const previewContainer = document.getElementById('preview-container');
+            previewContainer.innerHTML = '';
+
+            const file = event.target.files[0];
+            const imageURL = URL.createObjectURL(file);
+            const imgElement = document.createElement('img');
+            imgElement.src = imageURL;
+            imgElement.classList.add('preview-image');
+            previewContainer.appendChild(imgElement);
+        }
+    </script>
+</body>
+</html>
