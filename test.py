@@ -2,7 +2,7 @@ import streamlit as st
 import os
 import cv2
 import shutil
-
+from ultralytics import YOLO
 
 def main():
     st.title("Image Upload and Detection")
@@ -22,9 +22,8 @@ def main():
             f.write(uploaded_file.getbuffer())
 
         # Run YOLO detection
-        os.system(
-            'yolo task=detect mode=predict model=best.pt source=static/uploads/ imgsz=640 name=yolov8n show_labels=true')
-
+        model = YOLO('best.pt')
+        model.predict('static/uploads/' + image.filename, save=True)
         # Load the detected image
         img_path = os.path.join('runs/detect/yolov8n', uploaded_file.name)
         img = cv2.imread(img_path)
