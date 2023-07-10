@@ -1,57 +1,39 @@
-from flask import Flask, render_template, request
-import numpy as np
-from PIL import Image
-import io
-import base64
-from ultralytics import YOLO
-
-app = Flask(__name__)
-
-# Load the pretrained YOLOv8n model
-model = YOLO('best.pt')
-
-# Custom Jinja2 filter to encode data in base64
+import streamlit as st
+import os
+import cv2
+import shutil
 
 
-def base64_encode(data):
-    if data is None:
-        return ""
-    return base64.b64encode(data).decode('utf-8')
+def main():
+    st.title("Image Upload and Detection")
 
+    # Display the upload file dialog
+    uploaded_file = st.file_uploader(
+        "Choose an image", type=["jpg", "jpeg", "png"])
 
-# Register the filter in the Flask app
-app.jinja_env.filters['base64_encode'] = base64_encode
+    if uploaded_file is not None:
+        # Remove the existing folder if it exists
+        folder_path = 'runs'
+        if os.path.exists(folder_path):
+            shutil.rmtree(folder_path)
 
+        # Save the uploaded image to a folder
+        with open(os.path.join('static/uploads', uploaded_file.name), "wb") as f:
+            f.write(uploaded_file.getbuffer())
 
-@app.route('/')
-def index():
-    return render_template('index.html')
+        # Run YOLO detection
+        os.system(
+            'yolo task=detect mode=predict model=best.pt source=static/uploads/ imgsz=640 name=yolov8n show_labels=true')
 
+        # Load the detected image
+        img_path = os.path.join('runs/detect/yolov8n', uploaded_file.name)
+        img = cv2.imread(img_path)
+        result_path = os.path.join('static/results', uploaded_file.name)
+        cv2.imwrite(result_path, img)
 
-@app.route('/upload', methods=['POST'])
-def upload():
-    # Get the uploaded image file
-    image = request.files['image']
-
-    # Open the image file using PIL
-    img = Image.open(image)
-
-    # Convert PIL image to numpy array
-    source = np.array(img)
-
-    # Run inference on the source using the YOLO model
-    results = model(source)
-
-    # Retrieve the original image from the results
-    orig_img = results.imgs[0]
-
-    # Convert the original image to bytes
-    img_bytes = io.BytesIO()
-    orig_img.save(img_bytes, format='JPEG')
-    img_bytes = img_bytes.getvalue()
-
-    return render_template('display.html', uploaded_image_data=img_bytes)
+        # Display the detected image
+        st.image(result_path, use_column_width=True)
 
 
 if __name__ == '__main__':
-    app.run()
+    main()
